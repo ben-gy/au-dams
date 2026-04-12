@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Dam body -->
+  <rect x="4" y="14" width="24" height="10" rx="1" fill="#38bdf8" opacity="0.9"/>
+  <!-- Water fill inside dam -->
+  <rect x="6" y="16" width="20" height="6" rx="1" fill="#0ea5e9" opacity="0.7"/>
+  <!-- Dam wall -->
+  <rect x="13" y="8" width="6" height="8" rx="1" fill="#60a5fa"/>
+  <!-- Spillway lines -->
+  <line x1="4" y1="24" x2="4" y2="28" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="24" x2="28" y2="28" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+  <!-- Water surface wave -->
+  <path d="M6 19 Q10 17 14 19 Q18 21 22 19 Q26 17 28 19" stroke="#7dd3fc" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
