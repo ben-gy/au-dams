@@ -1,6 +1,6 @@
 {
   "fetched_at": "2026-04-13T00:00:00.000Z",
-  "_note": "Seed data — pipeline will replace this with live BOM data",
+  "_note": "Seed data — BOM WISKI pipeline will replace this with live data after first run",
   "snapshots": [
     {
       "station_no": "410088",
