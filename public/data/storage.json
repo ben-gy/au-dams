@@ -1,31 +1,4 @@
 {
-  "fetched_at": "2026-04-13T00:00:00.000Z",
-  "snapshots": [
-    { "station_no": "410088", "percent_full": 72.4, "value_ml": 3447488, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "401507", "percent_full": 65.3, "value_ml": 1983814, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "212212", "percent_full": 78.9, "value_ml": 1599303, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "421112", "percent_full": 58.2, "value_ml": 976596, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "412107", "percent_full": 61.7, "value_ml": 1006227, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "416014", "percent_full": 54.8, "value_ml": 747804, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "412030", "percent_full": 63.1, "value_ml": 647406, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "418025", "percent_full": 48.6, "value_ml": 206550, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "421200", "percent_full": 55.4, "value_ml": 203832, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "210044", "percent_full": 67.3, "value_ml": 200554, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "410151", "percent_full": 71.2, "value_ml": 88288, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "403205", "percent_full": 70.1, "value_ml": 2737806, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "404207", "percent_full": 62.4, "value_ml": 2080416, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "228207", "percent_full": 58.6, "value_ml": 625848, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "227232", "percent_full": 66.7, "value_ml": 192096, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "143009", "percent_full": 84.2, "value_ml": 981030, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "143028", "percent_full": 88.5, "value_ml": 336300, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "145014", "percent_full": 90.1, "value_ml": 279410, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "143068", "percent_full": 86.3, "value_ml": 185545, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "504584", "percent_full": 43.2, "value_ml": 21168, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "502198", "percent_full": 38.7, "value_ml": 4257, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "616008", "percent_full": 31.4, "value_ml": 22294, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "616107", "percent_full": 28.9, "value_ml": 28611, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "616115", "percent_full": 33.6, "value_ml": 24192, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "316039", "percent_full": 82.7, "value_ml": 10310169, "updated": "2026-04-13T00:00:00.000Z", "history": [] },
-    { "station_no": "314213", "percent_full": 76.4, "value_ml": 1956904, "updated": "2026-04-13T00:00:00.000Z", "history": [] }
-  ]
+  "fetched_at": "2026-04-13T00:18:48.058Z",
+  "snapshots": []
 }
