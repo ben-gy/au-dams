@@ -24,8 +24,8 @@ export async function initMap(
     zoomControl: true,
   });
 
-  // CartoDB dark tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  // CartoDB Voyager — clean, neutral light tiles suitable for civic/environment sites
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors © <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 19,
@@ -35,7 +35,7 @@ export async function initMap(
 
   for (const dam of dams) {
     const pct = dam.snapshot?.percent_full;
-    const color = pct !== undefined ? getStorageHex(pct) : '#3d4f6f';
+    const color = pct !== undefined ? getStorageHex(pct) : '#a0aec0';
     const radius = getMarkerRadius(dam.capacity_ml, maxCap);
 
     const marker = L.circleMarker([dam.lat, dam.lon], {
@@ -70,7 +70,7 @@ function buildPopupHtml(dam: DamDisplay): string {
 
   const pctStr = pct !== undefined ? formatPercent(pct) : '—';
   const volStr = ml !== null && ml !== undefined ? formatGL(ml) : (pct !== undefined ? formatGL(dam.capacity_ml * pct / 100) : '—');
-  const color = pct !== undefined ? getStorageHex(pct) : '#3d4f6f';
+  const color = pct !== undefined ? getStorageHex(pct) : '#a0aec0';
   const label = pct !== undefined ? getStorageLabel(pct) : 'No data';
 
   return `

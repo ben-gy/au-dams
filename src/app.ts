@@ -5,6 +5,7 @@ import { mergeDamData, getNationalStats, groupByState, sortDams, filterDams } fr
 import { formatGL, formatPercent, formatDate, formatRelative, getStorageColor, getStorageHex, getStorageLabel } from './utils/format.ts';
 import { renderHistoryChart } from './components/chart.ts';
 import { initMap } from './components/map.ts';
+import { lookupTerm } from './glossary.ts';
 
 interface AppState {
   dams: DamDisplay[];
@@ -34,10 +35,10 @@ function buildShell(): void {
     <header class="site-header" role="banner">
       <div class="site-logo">
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="4" y="14" width="24" height="10" rx="1" fill="#38bdf8" opacity="0.9"/>
-          <rect x="6" y="16" width="20" height="6" rx="1" fill="#0ea5e9" opacity="0.7"/>
-          <rect x="13" y="8" width="6" height="8" rx="1" fill="#60a5fa"/>
-          <path d="M6 19 Q10 17 14 19 Q18 21 22 19 Q26 17 28 19" stroke="#7dd3fc" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <rect x="4" y="14" width="24" height="10" rx="1" fill="#1a7fba" opacity="0.85"/>
+          <rect x="6" y="16" width="20" height="6" rx="1" fill="#2d8a5e" opacity="0.6"/>
+          <rect x="13" y="8" width="6" height="8" rx="1" fill="#1a7fba"/>
+          <path d="M6 19 Q10 17 14 19 Q18 21 22 19 Q26 17 28 19" stroke="#2d8a5e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         </svg>
         <div>
           <div class="site-logo-text">AU Dams</div>
@@ -46,7 +47,7 @@ function buildShell(): void {
       </div>
       <div class="header-stats" id="header-stats">
         <div class="header-stat">
-          <div class="header-stat-label">National Storage</div>
+          <div class="header-stat-label"><span class="glossary-link" data-term="national_storage">National Storage</span></div>
           <div class="header-stat-value" id="stat-national">—</div>
         </div>
         <div class="header-stat">
@@ -66,6 +67,7 @@ function buildShell(): void {
         <div class="data-freshness" id="data-freshness">
           <span class="dot"></span>Loading…
         </div>
+        <button class="about-btn" id="about-btn" aria-label="About this site" title="About this site">?</button>
       </div>
     </header>
 
@@ -93,7 +95,7 @@ function buildShell(): void {
       <div class="map-wrap" role="region" aria-label="Map">
         <div id="map"></div>
         <div class="map-legend" aria-hidden="true">
-          <div class="legend-title">Storage Level</div>
+          <div class="legend-title"><span class="glossary-link" data-term="storage_level">Storage Level</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>&gt;80% Full</div>
           <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>60–80%</div>
           <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>40–60%</div>
@@ -111,9 +113,46 @@ function buildShell(): void {
       <span class="footer-item">
         Data: <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology Water Data Online</a>
       </span>
-      <span class="footer-item">Updated every 6 hours via GitHub Actions</span>
-      <span class="footer-item">No tracking · No cookies · Open source</span>
+      <span class="footer-item">Updated every 6 hours</span>
+      <span class="footer-item">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener">benrichardson.dev</a></span>
     </footer>
+
+    <!-- About modal -->
+    <div class="modal-backdrop" id="about-modal" aria-hidden="true">
+      <div class="modal-content" role="dialog" aria-labelledby="about-title">
+        <div class="modal-header">
+          <div class="modal-title" id="about-title">About AU Dams</div>
+          <button class="modal-close" id="about-modal-close" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <h3>What is this?</h3>
+          <p>AU Dams is a real-time dashboard showing storage levels for Australia's major dams and reservoirs. It helps citizens, farmers, and policy researchers track water security at a glance.</p>
+
+          <h3>Where does the data come from?</h3>
+          <p>All storage data is sourced from the <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology (BOM) Water Data Online</a> service. BOM collects this data from water authorities across all states and territories.</p>
+
+          <h3>How often is it updated?</h3>
+          <p>An automated pipeline fetches the latest data from BOM every 6 hours. The "Data" indicator in the header shows how fresh the current data is. If it shows "stale", the pipeline may have encountered an error — the data shown is the most recent successful fetch.</p>
+
+          <h3>Important caveats</h3>
+          <ul>
+            <li>Not all dams report data to BOM — some smaller or privately-operated dams may show "No data".</li>
+            <li>Storage percentages over 100% can occur when dams spill during flood events.</li>
+            <li>The "National Storage" figure is a capacity-weighted average and may not reflect conditions in specific regions.</li>
+            <li>Data may be delayed by up to 24 hours depending on the reporting water authority.</li>
+          </ul>
+
+          <h3>Glossary</h3>
+          <p>Hover or click the <span style="border-bottom:1px dotted var(--accent-primary);cursor:help">dotted-underlined terms</span> throughout the interface for quick definitions of water and dam terminology.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glossary tooltip -->
+    <div class="glossary-tooltip" id="glossary-tooltip" role="tooltip">
+      <div class="glossary-tooltip-term" id="glossary-tooltip-term"></div>
+      <div class="glossary-tooltip-def" id="glossary-tooltip-def"></div>
+    </div>
   `;
 }
 
@@ -246,7 +285,7 @@ function renderDetailPanel(): void {
   const pct = dam.snapshot?.percent_full;
   const ml = dam.snapshot?.value_ml;
   const color = pct !== undefined ? getStorageColor(pct) : 'var(--text-muted)';
-  const hex = pct !== undefined ? getStorageHex(pct) : '#3d4f6f';
+  const hex = pct !== undefined ? getStorageHex(pct) : '#a0aec0';
   const pctStr = pct !== undefined ? formatPercent(pct) : '—';
   const currentVol = ml !== null && ml !== undefined
     ? formatGL(ml)
@@ -277,7 +316,7 @@ function renderDetailPanel(): void {
 
     <div class="detail-stats">
       <div class="detail-stat">
-        <div class="detail-stat-label">Capacity</div>
+        <div class="detail-stat-label"><span class="glossary-link" data-term="capacity">Capacity</span></div>
         <div class="detail-stat-value">${formatGL(dam.capacity_ml)}</div>
       </div>
       <div class="detail-stat">
@@ -285,7 +324,7 @@ function renderDetailPanel(): void {
         <div class="detail-stat-value">${currentVol}</div>
       </div>
       <div class="detail-stat">
-        <div class="detail-stat-label">BOM Station</div>
+        <div class="detail-stat-label"><span class="glossary-link" data-term="bom">BOM Station</span></div>
         <div class="detail-stat-value">${dam.station_no}</div>
       </div>
       <div class="detail-stat">
@@ -384,4 +423,61 @@ export async function init(): Promise<void> {
   });
 
   updateSortButtons();
+
+  // About modal
+  const aboutBtn = document.getElementById('about-btn');
+  const aboutModal = document.getElementById('about-modal')!;
+  const aboutClose = document.getElementById('about-modal-close');
+
+  aboutBtn?.addEventListener('click', () => {
+    aboutModal.classList.add('visible');
+    aboutModal.setAttribute('aria-hidden', 'false');
+  });
+
+  aboutClose?.addEventListener('click', () => {
+    aboutModal.classList.remove('visible');
+    aboutModal.setAttribute('aria-hidden', 'true');
+  });
+
+  aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) {
+      aboutModal.classList.remove('visible');
+      aboutModal.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // Glossary tooltip — delegated click handler
+  const tooltip = document.getElementById('glossary-tooltip')!;
+  const tooltipTerm = document.getElementById('glossary-tooltip-term')!;
+  const tooltipDef = document.getElementById('glossary-tooltip-def')!;
+
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest('.glossary-link') as HTMLElement | null;
+    if (target) {
+      e.preventDefault();
+      const termKey = target.dataset.term;
+      if (!termKey) return;
+      const entry = lookupTerm(termKey);
+      if (!entry) return;
+
+      tooltipTerm.textContent = entry.term;
+      tooltipDef.textContent = entry.definition;
+
+      const rect = target.getBoundingClientRect();
+      tooltip.style.left = `${Math.min(rect.left, window.innerWidth - 340)}px`;
+      tooltip.style.top = `${rect.bottom + 6}px`;
+      tooltip.classList.add('visible');
+    } else if (!tooltip.contains(e.target as Node)) {
+      tooltip.classList.remove('visible');
+    }
+  });
+
+  // Escape key closes modals and tooltips
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      tooltip.classList.remove('visible');
+      aboutModal.classList.remove('visible');
+      aboutModal.setAttribute('aria-hidden', 'true');
+    }
+  });
 }

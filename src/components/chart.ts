@@ -61,11 +61,11 @@ export function renderHistoryChart(history: HistoryPoint[], container: HTMLEleme
   grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
   const stop1 = document.createElementNS(ns, 'stop');
   stop1.setAttribute('offset', '0%');
-  stop1.setAttribute('stop-color', '#38bdf8');
+  stop1.setAttribute('stop-color', '#1a7fba');
   stop1.setAttribute('stop-opacity', '0.25');
   const stop2 = document.createElementNS(ns, 'stop');
   stop2.setAttribute('offset', '100%');
-  stop2.setAttribute('stop-color', '#38bdf8');
+  stop2.setAttribute('stop-color', '#1a7fba');
   stop2.setAttribute('stop-opacity', '0.02');
   grad.appendChild(stop1);
   grad.appendChild(stop2);
@@ -79,7 +79,7 @@ export function renderHistoryChart(history: HistoryPoint[], container: HTMLEleme
     line.setAttribute('x2', String(PAD.left + chartW));
     line.setAttribute('y1', String(gl.y));
     line.setAttribute('y2', String(gl.y));
-    line.setAttribute('stroke', '#1e2d45');
+    line.setAttribute('stroke', '#e2e8f0');
     line.setAttribute('stroke-width', '1');
     svg.appendChild(line);
 
@@ -87,7 +87,7 @@ export function renderHistoryChart(history: HistoryPoint[], container: HTMLEleme
     text.setAttribute('x', String(PAD.left - 4));
     text.setAttribute('y', String(gl.y + 3));
     text.setAttribute('text-anchor', 'end');
-    text.setAttribute('fill', '#5b6a8b');
+    text.setAttribute('fill', '#78869b');
     text.setAttribute('font-size', '9');
     text.setAttribute('font-family', 'SF Mono, Fira Code, monospace');
     text.textContent = gl.label;
@@ -104,7 +104,7 @@ export function renderHistoryChart(history: HistoryPoint[], container: HTMLEleme
   const line = document.createElementNS(ns, 'path');
   line.setAttribute('d', linePath);
   line.setAttribute('fill', 'none');
-  line.setAttribute('stroke', '#38bdf8');
+  line.setAttribute('stroke', '#1a7fba');
   line.setAttribute('stroke-width', '1.5');
   line.setAttribute('stroke-linecap', 'round');
   line.setAttribute('stroke-linejoin', 'round');
@@ -116,7 +116,7 @@ export function renderHistoryChart(history: HistoryPoint[], container: HTMLEleme
     text.setAttribute('x', String(lbl.x));
     text.setAttribute('y', String(H - 4));
     text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('fill', '#5b6a8b');
+    text.setAttribute('fill', '#78869b');
     text.setAttribute('font-size', '9');
     text.setAttribute('font-family', '-apple-system, Helvetica, sans-serif');
     text.textContent = lbl.label;

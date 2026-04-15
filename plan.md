@@ -26,6 +26,13 @@ A single, fast, map-based dashboard showing all major Australian reservoirs at a
 6. **Color-coded status** — Green (>80%), blue (60-80%), yellow (40-60%), orange (20-40%), red (<20%)
 7. **Data freshness** — Shows when pipeline last ran; never silently serves stale data
 
+## Style Direction
+**Tone:** calm/reassuring — civic utility tool for water-conscious Australians
+**Colour palette:** Light base (#f4f7fa) with water blue (#1a7fba) and environment green (#2d8a5e) accents. Earthy, trustworthy, non-technical. Designed so a farmer checking overnight on a phone or a policy analyst on desktop both feel at home.
+**UI density:** balanced — data-dense enough to show all dams at a glance, but spacious enough for general public
+**Dark/light theme:** light — civic/environment audience, general public
+**Reference sites for tone:** fuelaustralia.org (clean utility), bom.gov.au (authoritative government data)
+
 ## Technical Architecture
 - **Stack:** Vanilla TypeScript + Vite
 - **Data strategy:** Pipeline (GitHub Actions → BOM WISKI API → public/data/storage.json)
