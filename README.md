@@ -2,7 +2,7 @@
 
 **Live storage levels for Australia's major dams and reservoirs**
 
-🔗 **Live:** [https://au-dams.benrichardson.dev](https://au-dams.benrichardson.dev)
+🔗 **Live:** [https://audams.benrichardson.dev](https://audams.benrichardson.dev)
 
 ## What is this?
 
