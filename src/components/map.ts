@@ -73,6 +73,9 @@ export function refreshMarkers(
     const popupHtml = buildPopupHtml(dam);
     marker.bindPopup(popupHtml, { maxWidth: 220, autoPan: false });
 
+    const tipPct = pct !== undefined ? formatPercent(pct) : 'No data';
+    marker.bindTooltip(`${dam.name} · ${tipPct}`, { direction: 'top' });
+
     marker.on('click', () => {
       onSelect(dam);
     });
