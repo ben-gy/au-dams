@@ -1,9 +1,11 @@
 import 'leaflet/dist/leaflet.css';
-import type { Map as LeafletMap } from 'leaflet';
+import type { Map as LeafletMap, LayerGroup } from 'leaflet';
 import type { DamDisplay } from '../types.ts';
 import { getStorageHex, getMarkerRadius, getStorageLabel, formatPercent, formatGL } from '../utils/format.ts';
 
 let mapInstance: LeafletMap | null = null;
+let markersLayer: LayerGroup | null = null;
+let leaflet: typeof import('leaflet') | null = null;
 
 export async function initMap(
   containerId: string,
@@ -11,11 +13,13 @@ export async function initMap(
   onSelect: (dam: DamDisplay) => void
 ): Promise<void> {
   const L = await import('leaflet');
+  leaflet = L;
 
   const container = document.getElementById(containerId)!;
   if (mapInstance) {
     mapInstance.remove();
     mapInstance = null;
+    markersLayer = null;
   }
 
   const map = L.map(container, {
@@ -30,6 +34,25 @@ export async function initMap(
     subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(map);
+
+  markersLayer = L.layerGroup().addTo(map);
+  mapInstance = map;
+
+  refreshMarkers(dams, onSelect);
+}
+
+/**
+ * Rebuild the marker layer from current dam data without touching the
+ * map view — used when live BOM data arrives after the initial paint.
+ */
+export function refreshMarkers(
+  dams: DamDisplay[],
+  onSelect: (dam: DamDisplay) => void
+): void {
+  const L = leaflet;
+  if (!L || !markersLayer) return;
+
+  markersLayer.clearLayers();
 
   const maxCap = Math.max(...dams.map(d => d.capacity_ml));
 
@@ -54,14 +77,8 @@ export async function initMap(
       onSelect(dam);
     });
 
-    marker.addTo(map);
+    marker.addTo(markersLayer);
   }
-
-  mapInstance = map;
-}
-
-export function updateMapMarker(_dam: DamDisplay): void {
-  // Markers are rebuilt on full re-render; individual updates not needed for static pipeline data
 }
 
 function buildPopupHtml(dam: DamDisplay): string {

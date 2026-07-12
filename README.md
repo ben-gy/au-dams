@@ -10,7 +10,7 @@ AU Dams is a real-time web dashboard tracking water storage levels across 26 maj
 
 The site covers reservoirs in every state and territory — from Warragamba Dam (Sydney's primary water supply) to Lake Gordon in Tasmania (Australia's largest by volume). Each reservoir shows current percentage full, storage volume, capacity, and trend data over the past 12 months.
 
-Water storage levels are updated monthly via a GitHub Actions data pipeline that writes processed JSON to the repository. The static site then reads that JSON — no backend server required.
+Storage data is fetched live, directly in your browser, from BOM's public WISKI API — it is HTTPS, CORS-open, and keyless, so no backend or pipeline is needed for fresh data. A bundled fallback snapshot (refreshed monthly by a GitHub Actions pipeline) paints the page instantly and keeps the site useful during BOM outages.
 
 ## Who is this for?
 
@@ -38,9 +38,9 @@ All data is publicly available from the Australian Bureau of Meteorology under t
 
 - **Runtime:** Vanilla TypeScript
 - **Build:** Vite 6
-- **Testing:** Vitest (59 tests)
+- **Testing:** Vitest
 - **Hosting:** GitHub Pages (static, no backend)
-- **Data:** GitHub Actions pipeline → BOM WISKI API → `public/data/storage.json`
+- **Data:** Live client-side fetch from BOM WISKI API, with `public/data/storage.json` as bundled fallback (refreshed monthly via GitHub Actions)
 - **Map:** Leaflet 1.9 with CartoDB dark tiles
 - **Charts:** Hand-rolled SVG (no D3)
 
@@ -65,12 +65,12 @@ npm run preview
 
 ## How it works
 
-1. **Pipeline** (`pipeline/collect.mjs`) runs monthly via GitHub Actions
-2. For each reservoir, it queries the BOM WISKI API's `getTimeseriesList` to find the "Storage Level - %Full" timeseries ID
-3. It then fetches 365 days of daily readings with `getTimeseriesValues`
-4. Results are written to `public/data/storage.json` and committed to the repo
-5. GitHub Pages serves the updated JSON alongside the static site
-6. The browser fetches `/data/storage.json` on page load and renders the dashboard
+1. The browser loads the bundled fallback snapshot (`/data/storage.json`) and paints the dashboard immediately
+2. It then queries the BOM WISKI API directly (`src/utils/bom.ts`): `getTimeseriesList` finds each reservoir's Storage Volume timeseries ID, `getTimeseriesValues` fetches 365 days of daily readings
+3. Live results replace the fallback in place; the header indicator flips from "Cached" to "Live"
+4. Results are cached in localStorage (~6h; resolved timeseries IDs for 30 days) so repeat visits are instant and easy on BOM
+5. If BOM is unreachable (outages happen), the site simply stays on the fallback snapshot
+6. A monthly GitHub Actions pipeline (`pipeline/collect.mjs`) refreshes the fallback snapshot in the repo
 
 ## License
 

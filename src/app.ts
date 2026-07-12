@@ -4,7 +4,8 @@ import type { DamDisplay, SortField, SortDir, StorageData } from './types.ts';
 import { mergeDamData, getNationalStats, groupByState, sortDams, filterDams } from './utils/storage.ts';
 import { formatGL, formatPercent, formatDate, formatRelative, getStorageColor, getStorageHex, getStorageLabel } from './utils/format.ts';
 import { renderHistoryChart } from './components/chart.ts';
-import { initMap } from './components/map.ts';
+import { initMap, refreshMarkers } from './components/map.ts';
+import { fetchLiveData } from './utils/bom.ts';
 import { lookupTerm } from './glossary.ts';
 
 interface AppState {
@@ -14,6 +15,7 @@ interface AppState {
   sortDir: SortDir;
   searchQuery: string;
   dataFetchedAt: string | null;
+  dataSource: 'live' | 'fallback' | null;
   loading: boolean;
   error: string | null;
 }
@@ -25,6 +27,7 @@ const state: AppState = {
   sortDir: 'desc',
   searchQuery: '',
   dataFetchedAt: null,
+  dataSource: null,
   loading: true,
   error: null,
 };
@@ -113,7 +116,7 @@ function buildShell(): void {
       <span class="footer-item">
         Data: <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology Water Data Online</a>
       </span>
-      <span class="footer-item">Updated monthly</span>
+      <span class="footer-item">Live daily readings, fetched in your browser</span>
       <span class="footer-item">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener">benrichardson.dev</a> · <a href="https://hub.benrichardson.dev" target="_blank" rel="noopener">more tools &amp; sites</a></span>
     </footer>
 
@@ -132,7 +135,7 @@ function buildShell(): void {
           <p>All storage data is sourced from the <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology (BOM) Water Data Online</a> service. BOM collects this data from water authorities across all states and territories.</p>
 
           <h3>How often is it updated?</h3>
-          <p>An automated pipeline fetches the latest data from BOM monthly. The "Data" indicator in the header shows how fresh the current data is. If it shows "stale", the pipeline may have encountered an error — the data shown is the most recent successful fetch.</p>
+          <p>Your browser fetches the latest daily readings directly from BOM each time you visit (cached for a few hours). The indicator in the header shows "Live" when current BOM data loaded, or "Cached" when BOM couldn't be reached — in that case the site falls back to a bundled snapshot that is refreshed monthly.</p>
 
           <h3>Important caveats</h3>
           <ul>
@@ -180,11 +183,12 @@ function updateHeaderStats(): void {
 
   const fresh = document.getElementById('data-freshness');
   if (fresh) {
-    const dot = fresh.querySelector('.dot') as HTMLElement;
-    if (state.dataFetchedAt) {
+    if (state.dataSource === 'live' && state.dataFetchedAt) {
+      fresh.innerHTML = `<span class="dot"></span>Live: ${formatRelative(state.dataFetchedAt)}`;
+    } else if (state.dataFetchedAt) {
       const ageH = (Date.now() - new Date(state.dataFetchedAt).getTime()) / 3_600_000;
-      dot.className = 'dot' + (ageH > 24 ? ' stale' : '');
-      fresh.innerHTML = `<span class="${dot.className}"></span>Data: ${formatRelative(state.dataFetchedAt)}`;
+      const dotClass = 'dot' + (ageH > 24 ? ' stale' : '');
+      fresh.innerHTML = `<span class="${dotClass}"></span>Cached: ${formatRelative(state.dataFetchedAt)}`;
     } else if (state.error) {
       fresh.innerHTML = '<span class="dot error"></span>Data unavailable';
     }
@@ -349,7 +353,7 @@ function renderDetailPanel(): void {
   if (dam.snapshot?.history && dam.snapshot.history.length > 0) {
     renderHistoryChart(dam.snapshot.history, chartContainer);
   } else {
-    chartContainer.innerHTML = '<p class="no-history">History data will appear after the pipeline runs.</p>';
+    chartContainer.innerHTML = '<p class="no-history">No storage history is available for this reservoir yet.</p>';
   }
 }
 
@@ -372,6 +376,7 @@ async function loadData(): Promise<void> {
 
     state.dams = mergeDamData(DAMS, data.snapshots);
     state.dataFetchedAt = data.fetched_at;
+    state.dataSource = 'fallback';
     state.loading = false;
   } catch (err) {
     state.loading = false;
@@ -385,6 +390,32 @@ async function loadData(): Promise<void> {
   }
 }
 
+/**
+ * Fetch live data straight from BOM and upgrade the UI in place.
+ * On failure (BOM outage, offline) the fallback snapshot stays up.
+ */
+async function refreshLive(): Promise<void> {
+  const live = await fetchLiveData(DAMS);
+  if (!live) return;
+
+  const liveMap = new Map(live.snapshots.map(s => [s.station_no, s]));
+  state.dams = state.dams.map(d => {
+    const snap = liveMap.get(d.station_no);
+    return snap ? { ...d, snapshot: snap } : d;
+  });
+  state.dataFetchedAt = live.fetched_at;
+  state.dataSource = 'live';
+
+  if (state.selectedDam) {
+    state.selectedDam = state.dams.find(d => d.id === state.selectedDam!.id) ?? null;
+  }
+
+  renderDamList();
+  updateHeaderStats();
+  refreshMarkers(state.dams, selectDam);
+  if (state.selectedDam) renderDetailPanel();
+}
+
 export async function init(): Promise<void> {
   buildShell();
 
@@ -396,6 +427,9 @@ export async function init(): Promise<void> {
   // Render dam list
   renderDamList();
   updateHeaderStats();
+
+  // Upgrade to live BOM data once the fallback view is on screen
+  void refreshLive();
 
   // Search handler with debounce
   let searchTimer: ReturnType<typeof setTimeout>;
