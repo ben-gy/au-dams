@@ -113,7 +113,7 @@ function buildShell(): void {
       <span class="footer-item">
         Data: <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology Water Data Online</a>
       </span>
-      <span class="footer-item">Updated every 6 hours</span>
+      <span class="footer-item">Updated monthly</span>
       <span class="footer-item">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener">benrichardson.dev</a> · <a href="https://hub.benrichardson.dev" target="_blank" rel="noopener">more tools &amp; sites</a></span>
     </footer>
 
@@ -132,7 +132,7 @@ function buildShell(): void {
           <p>All storage data is sourced from the <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology (BOM) Water Data Online</a> service. BOM collects this data from water authorities across all states and territories.</p>
 
           <h3>How often is it updated?</h3>
-          <p>An automated pipeline fetches the latest data from BOM every 6 hours. The "Data" indicator in the header shows how fresh the current data is. If it shows "stale", the pipeline may have encountered an error — the data shown is the most recent successful fetch.</p>
+          <p>An automated pipeline fetches the latest data from BOM monthly. The "Data" indicator in the header shows how fresh the current data is. If it shows "stale", the pipeline may have encountered an error — the data shown is the most recent successful fetch.</p>
 
           <h3>Important caveats</h3>
           <ul>

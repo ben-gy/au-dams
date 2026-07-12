@@ -233,6 +233,16 @@ async function main() {
     await new Promise(r => setTimeout(r, 300));
   }
 
+  // Guard: never clobber good committed data with an empty (or near-empty)
+  // result — the BOM API has outage days (e.g. DatasourceError, 2026-07-10)
+  // and an unconditional write once wiped the live site.
+  if (snapshots.length < DAMS.length / 2) {
+    console.error(
+      `\n❌ Only ${snapshots.length}/${DAMS.length} dams fetched — refusing to overwrite ${OUT_FILE}. Existing data left untouched.`,
+    );
+    process.exit(1);
+  }
+
   const output = {
     fetched_at: new Date().toISOString(),
     snapshots,

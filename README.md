@@ -10,7 +10,7 @@ AU Dams is a real-time web dashboard tracking water storage levels across 26 maj
 
 The site covers reservoirs in every state and territory — from Warragamba Dam (Sydney's primary water supply) to Lake Gordon in Tasmania (Australia's largest by volume). Each reservoir shows current percentage full, storage volume, capacity, and trend data over the past 12 months.
 
-Water storage levels are updated every 6 hours via a GitHub Actions data pipeline that writes processed JSON to the repository. The static site then reads that JSON — no backend server required.
+Water storage levels are updated monthly via a GitHub Actions data pipeline that writes processed JSON to the repository. The static site then reads that JSON — no backend server required.
 
 ## Who is this for?
 
@@ -65,7 +65,7 @@ npm run preview
 
 ## How it works
 
-1. **Pipeline** (`pipeline/collect.mjs`) runs every 6 hours via GitHub Actions
+1. **Pipeline** (`pipeline/collect.mjs`) runs monthly via GitHub Actions
 2. For each reservoir, it queries the BOM WISKI API's `getTimeseriesList` to find the "Storage Level - %Full" timeseries ID
 3. It then fetches 365 days of daily readings with `getTimeseriesValues`
 4. Results are written to `public/data/storage.json` and committed to the repo
