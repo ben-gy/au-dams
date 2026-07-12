@@ -114,7 +114,7 @@ function buildShell(): void {
         Data: <a href="http://www.bom.gov.au/waterdata/" target="_blank" rel="noopener">Bureau of Meteorology Water Data Online</a>
       </span>
       <span class="footer-item">Updated every 6 hours</span>
-      <span class="footer-item">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener">benrichardson.dev</a></span>
+      <span class="footer-item">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener">benrichardson.dev</a> · <a href="https://hub.benrichardson.dev" target="_blank" rel="noopener">more tools &amp; sites</a></span>
     </footer>
 
     <!-- About modal -->
