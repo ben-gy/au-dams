@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://audams.benrichardson.dev/sitemap.xml
